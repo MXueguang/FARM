@@ -4,7 +4,12 @@ import os
 import pprint
 from pathlib import Path
 import argparse
+import sys
 
+# We're going to explicitly use a local installation of FARM (as opposed to a pip-installed one).
+# Comment these lines out to use a pip-installed one instead.
+sys.path.insert(0, './')
+sys.path.insert(0, '../farm/')
 
 from farm.data_handler.data_silo import DataSilo
 from farm.data_handler.processor import TextSimilarityProcessor
@@ -34,17 +39,17 @@ def dense_passage_retrieval():
         level=logging.INFO,
     )
 
-    ml_logger = MLFlowLogger(tracking_uri="https://public-mlflow.deepset.ai/")
+    ml_logger = MLFlowLogger(tracking_uri="")  # "https://public-mlflow.deepset.ai/")
     ml_logger.init_experiment(experiment_name="FARM-dense_passage_retrieval", run_name="Run_dpr")
 
     ##########################
     ########## Settings
     ##########################
     set_all_seeds(seed=42)
-    batch_size = 4
-    n_epochs = 3
-    distributed = False # enable for multi GPU training via DDP
-    evaluate_every = 1000
+    batch_size = 128
+    n_epochs = 40
+    distributed = True # enable for multi GPU training via DDP
+    evaluate_every = 10000
     question_lang_model = "bert-base-uncased"
     passage_lang_model = "bert-base-uncased"
     do_lower_case = True
@@ -55,7 +60,7 @@ def dense_passage_retrieval():
     # data can be downloaded and unpacked into data_dir:
     # https://dl.fbaipublicfiles.com/dpr/data/retriever/biencoder-nq-train.json.gz
     # https://dl.fbaipublicfiles.com/dpr/data/retriever/biencoder-nq-dev.json.gz
-    data_dir = "../data/retriever"
+    data_dir = "data/"
     train_filename = "biencoder-nq-train.json"
     dev_filename = "biencoder-nq-dev.json"
     test_filename = "biencoder-nq-dev.json"
@@ -144,7 +149,7 @@ def dense_passage_retrieval():
     trainer.train()
 
     # 8. Hooray! You have a model. Store it:
-    save_dir = Path("../saved_models/dpr-tutorial")
+    save_dir = Path("models/")
     model.save(save_dir)
     processor.save(save_dir)
 
