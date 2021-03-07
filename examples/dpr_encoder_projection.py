@@ -46,10 +46,10 @@ def dense_passage_retrieval():
     ########## Settings
     ##########################
     set_all_seeds(seed=42)
-    batch_size = 2
-    n_epochs = 4
+    batch_size = 128
+    n_epochs = 40
     distributed = False # enable for multi GPU training via DDP
-    evaluate_every = 10000
+    evaluate_every = 1000
     question_lang_model = "facebook/dpr-question_encoder-multiset-base"
     passage_lang_model = "facebook/dpr-ctx_encoder-multiset-base"
     do_lower_case = True
@@ -103,7 +103,7 @@ def dense_passage_retrieval():
 
     # 4. Create an BiAdaptiveModel+
     # a) which consists of 2 pretrained language models as a basis
-    config_args = {"projection_dim": 64}
+    config_args = {} # {"projection_dim": 256}
     question_language_model = LanguageModel.load(pretrained_model_name_or_path=question_lang_model, language_model_class="DPRQuestionEncoder", **config_args)
     passage_language_model = LanguageModel.load(pretrained_model_name_or_path=passage_lang_model, language_model_class="DPRContextEncoder", **config_args)
 

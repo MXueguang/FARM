@@ -1613,6 +1613,7 @@ class TextSimilarityHead(PredictionHead):
         self.ph_output_type = "per_sequence"
         self.global_loss_buffer_size = global_loss_buffer_size
         self.generate_config()
+        self.dense = nn.Linear(768, 256, bias=False)
 
     @classmethod
     def dot_product_scores(cls, query_vectors, passage_vectors):
@@ -1676,7 +1677,7 @@ class TextSimilarityHead(PredictionHead):
 
         :return: (query_vectors, passage_vectors)
         """
-        return (query_vectors, passage_vectors)
+        return (self.dense(query_vectors), self.dense(passage_vectors))
 
     def _embeddings_to_scores(self, query_vectors:torch.Tensor, passage_vectors:torch.Tensor):
         """
@@ -1759,7 +1760,7 @@ class TextSimilarityHead(PredictionHead):
         targets = global_positive_idx_per_question.squeeze(-1).to(softmax_scores.device)
 
         # Calculate loss
-        loss = self.loss_fct(softmax_scores, targets)
+        loss = self.loss_fct(softmax_scores, targets) + torch.norm(torch.eye(768, device=softmax_scores.device)-torch.mm(self.dense.weight.t(), self.dense.weight))
         return loss
 
     def logits_to_preds(self, logits: Tuple[torch.Tensor, torch.Tensor], **kwargs):
