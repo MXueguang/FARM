@@ -47,7 +47,7 @@ def dense_passage_retrieval():
     ##########################
     set_all_seeds(seed=42)
     batch_size = 128
-    n_epochs = 40
+    n_epochs = 15
     distributed = False # enable for multi GPU training via DDP
     evaluate_every = 1000
     question_lang_model = "facebook/dpr-question_encoder-multiset-base"
