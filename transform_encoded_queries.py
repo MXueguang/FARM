@@ -3,6 +3,7 @@ import os
 import torch
 from torch.serialization import default_restore_location
 import pandas as pd
+import numpy as np
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -18,5 +19,5 @@ if __name__ == '__main__':
     state_dict = torch.load(args.model, map_location=lambda s, l: default_restore_location(s, "cpu"))
     weight = state_dict['question_encoder.encode_proj.weight'].numpy()
     bias = state_dict['question_encoder.encode_proj.bias'].numpy()
-    df1['embedding'] = df1['embedding'].dot(weight.T)+bias
+    df1['embedding'] = np.array(df1['embedding'].to_list()).dot(weight.T)+bias
     df1.to_pickle(os.path.join(args.output, 'embedding.pkl'))

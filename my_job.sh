@@ -9,4 +9,4 @@ export CUDA_VISIBLE_DEVICES=0,1,2,3
 
 source ~/.bashrc
 conda activate farm
-python examples/dpr_encoder_projection.p
+python examples/dpr_encoder_projection.py
